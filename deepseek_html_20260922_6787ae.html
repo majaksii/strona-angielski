@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Fiszki IT – Business Intelligence</title>
+    <style>
+        :root {
+            --bg: #1a1a1a;
+            --card: #2a2a2a;
+            --border: #3d3d3d;
+            --text: #e0e0e0;
+            --text-muted: #9a9a9a;
+            --text-dim: #6e6e6e;
+
+            --text-en: #f5f5f5;
+            --text-pl: #c8c8c8;
+
+            --accent: #5eb8e8;
+            --accent-hover: #3d9fd4;
+            --accent-soft: rgba(94, 184, 232, 0.12);
+            --accent-border: rgba(94, 184, 232, 0.35);
+
+            --success: #4a9d6a;
+            --success-bg: rgba(74, 157, 106, 0.18);
+            --danger: #c75450;
+            --danger-bg: rgba(199, 84, 80, 0.18);
+
+            --radius: 10px;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: calc(1rem + var(--safe-top)) 0.75rem calc(1.5rem + var(--safe-bottom));
+            overscroll-behavior-y: contain;
+            touch-action: manipulation;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent);
+            z-index: 100;
+            box-shadow: 0 0 12px rgba(94, 184, 232, 0.5);
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            text-align: center;
+            font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        h1 svg { flex-shrink: 0; color: var(--accent); }
+
+        .container { width: 100%; max-width: 900px; }
+
+        .tabs {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .tab {
+            flex: 1 1 auto;
+            min-height: 44px;
+            padding: 0.5rem 0.8rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            font-size: clamp(0.8rem, 3.2vw, 0.95rem);
+            font-family: inherit;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+        .tab svg { flex-shrink: 0; }
+        .tab.active {
+            background: var(--accent-soft);
+            color: var(--accent);
+            border-color: var(--accent-border);
+            font-weight: 600;
+        }
+        .tab.active svg { color: var(--accent); }
+        .tab:active:not(.active) { transform: scale(0.97); }
+        .tab:hover:not(.active) {
+            border-color: var(--accent-border);
+            color: var(--text);
+        }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* ============================================
+           LISTA SŁÓWEK – POPRAWIONA CZYTELNOŚĆ
+           ============================================ */
+        .word-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .word-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            padding: 0.85rem 0.9rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            transition: all 0.2s;
+            min-height: 60px;
+            position: relative;
+        }
+        .word-item.selected {
+            border-color: var(--accent-border);
+            background: var(--accent-soft);
+        }
+        .word-item.selected::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 2px;
+            background: var(--accent);
+            border-radius: 0 2px 2px 0;
+        }
+        .word-item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin: 0;
+            margin-top: 0.15rem;
+        }
+
+        .word-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            min-width: 0;
+            flex: 1;
+            line-height: 1.5;
+        }
+
+        .word-en {
+            font-weight: 700;
+            color: var(--text-en);
+            font-size: clamp(0.9rem, 3.6vw, 1rem);
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            letter-spacing: 0.01em;
+            line-height: 1.4;
+        }
+
+        .word-sep {
+            display: none;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            opacity: 0.7;
+            user-select: none;
+        }
+
+        .word-pl {
+            color: var(--text-pl);
+            font-size: clamp(0.85rem, 3.4vw, 0.95rem);
+            font-weight: 500;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            letter-spacing: 0.01em;
+            line-height: 1.5;
+        }
+
+        .progress {
+            font-size: clamp(0.75rem, 3vw, 0.9rem);
+            color: var(--text-dim);
+            margin-top: 0.8rem;
+            text-align: center;
+        }
+
+        /* --- Test --- */
+        .test-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+        .test-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1rem;
+            width: 100%;
+            text-align: center;
+        }
+        .test-question {
+            font-size: clamp(1.1rem, 4.8vw, 1.5rem);
+            font-weight: 700;
+            margin-bottom: 1.1rem;
+            color: var(--text-en);
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.4;
+            letter-spacing: 0.01em;
+        }
+        .test-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .test-option {
+            padding: 0.9rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.15s;
+            color: var(--text-en);
+            font-size: clamp(0.9rem, 3.7vw, 1.05rem);
+            font-weight: 500;
+            text-align: left;
+            font-family: inherit;
+            min-height: 50px;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.45;
+            letter-spacing: 0.01em;
+        }
+        .test-option:active:not(:disabled) { transform: scale(0.98); }
+        .test-option:hover:not(:disabled) {
+            border-color: var(--accent-border);
+            background: var(--accent-soft);
+        }
+        .test-option.correct {
+            background: var(--success-bg);
+            border-color: var(--success);
+            color: #7dd99a;
+            font-weight: 600;
+        }
+        .test-option.wrong {
+            background: var(--danger-bg);
+            border-color: var(--danger);
+            color: #e88a86;
+        }
+        .test-option:disabled { cursor: default; }
+        .test-option.correct:disabled,
+        .test-option.wrong:disabled { opacity: 1; }
+
+        .btn {
+            padding: 0.85rem 1.5rem;
+            background: var(--accent);
+            color: #1a1a1a;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: clamp(0.9rem, 3.5vw, 1rem);
+            font-family: inherit;
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn:hover { background: var(--accent-hover); }
+
+        .score {
+            font-size: clamp(1rem, 4vw, 1.15rem);
+            margin-top: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        .empty {
+            text-align: center;
+            color: var(--text-dim);
+            padding: 1.5rem 1rem;
+            font-size: 0.95rem;
+        }
+        .end-icon {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 380px) {
+            body { padding-left: 0.5rem; padding-right: 0.5rem; }
+            .tab { padding: 0.5rem 0.5rem; }
+            .word-item { padding: 0.75rem 0.7rem; gap: 0.6rem; }
+            .test-card { padding: 1rem 0.8rem; }
+            .test-option { padding: 0.8rem 0.85rem; }
+        }
+
+        /* ============================================
+           DESKTOP (≥600px) – EN → PL w jednej linii
+           ============================================ */
+        @media (min-width: 600px) {
+            .word-text {
+                flex-direction: row;
+                align-items: baseline;
+                gap: 0.6rem;
+                flex-wrap: wrap;
+            }
+            .word-en {
+                flex-shrink: 0;
+                min-width: 200px;
+                max-width: 45%;
+            }
+            .word-sep {
+                display: inline;
+            }
+            .word-pl {
+                flex: 1;
+                min-width: 0;
+            }
+            .test-card { padding: 1.8rem; }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            h1 { margin-bottom: 0.5rem; font-size: 1rem; }
+            .tabs { margin-bottom: 0.6rem; }
+            .test-card { padding: 0.9rem; }
+            .test-question { margin-bottom: 0.6rem; }
+            .test-options { gap: 0.4rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+            Fiszki IT – Business Intelligence
+        </h1>
+
+        <div class="tabs">
+            <button class="tab active" data-panel="list">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"/>
+                    <line x1="8" y1="12" x2="21" y2="12"/>
+                    <line x1="8" y1="18" x2="21" y2="18"/>
+                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                </svg>
+                Lista
+            </button>
+            <button class="tab" data-panel="test-en-pl">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+                EN → PL
+            </button>
+            <button class="tab" data-panel="test-pl-en">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+                PL → EN
+            </button>
+        </div>
+
+        <div id="list" class="panel active">
+            <div class="word-list" id="wordList"></div>
+            <p class="progress" id="progressList"></p>
+        </div>
+
+        <div id="test-en-pl" class="panel">
+            <div class="test-container" id="testEnPl"></div>
+        </div>
+
+        <div id="test-pl-en" class="panel">
+            <div class="test-container" id="testPlEn"></div>
+        </div>
+    </div>
+
+    <script>
+        const vocabulary = [
+            { en: "(to) accelerate", pl: "przyspieszać" },
+            { en: "ad-hoc query", pl: "zapytanie ad hoc" },
+            { en: "aggregated data", pl: "dane zagregowane" },
+            { en: "analysis and presentation layer", pl: "warstwa analizy i prezentacji" },
+            { en: "analytical cube", pl: "kostka analityczna" },
+            { en: "(to) boost business performance", pl: "pobudzać wzrost wyników działalności gospodarczej" },
+            { en: "business intelligence (BI)", pl: "analityka biznesowa/business intelligence" },
+            { en: "challenger", pl: "pretendent" },
+            { en: "cleansing process", pl: "proces oczyszczania" },
+            { en: "(to) collect data", pl: "gromadzić dane" },
+            { en: "computation", pl: "obliczenie" },
+            { en: "(to) conduct analysis", pl: "przeprowadzić analizę" },
+            { en: "conformed dimension table", pl: "współdzielona tabela wymiarów" },
+            { en: "cross-selling", pl: "sprzedaż krzyżowa" },
+            { en: "dashboard", pl: "kokpit menedżerski" },
+            { en: "data analysis expressions (DAX)", pl: "wyrażenia analizy danych" },
+            { en: "data capture", pl: "zbieranie danych" },
+            { en: "data cleansing", pl: "oczyszczanie danych" },
+            { en: "data format", pl: "format danych" },
+            { en: "data integration layer", pl: "warstwa integracji danych" },
+            { en: "data loading", pl: "ładowanie danych" },
+            { en: "data mart", pl: "składnica danych/tematyczna hurtownia danych" },
+            { en: "data mining", pl: "eksploracja danych" },
+            { en: "data profiling", pl: "profilowanie danych" },
+            { en: "data scrubbing", pl: "oczyszczanie danych" },
+            { en: "data sources layer", pl: "warstwa źródeł danych" },
+            { en: "data storage layer", pl: "warstwa przechowywania danych" },
+            { en: "data storage system", pl: "system przechowywania danych" },
+            { en: "data store", pl: "magazyn danych" },
+            { en: "data transformation", pl: "przekształcanie danych/transformacja danych" },
+            { en: "data type", pl: "typ danych" },
+            { en: "data validation", pl: "sprawdzanie poprawności danych" },
+            { en: "data visualization tool", pl: "narzędzie do wizualizacji danych" },
+            { en: "data visualization", pl: "wizualizacja danych" },
+            { en: "data warehouse", pl: "hurtownia danych" },
+            { en: "database schema", pl: "schemat bazy danych" },
+            { en: "(to) denormalize", pl: "dokonać denormalizacji" },
+            { en: "(to) detect", pl: "wykrywać" },
+            { en: "dimension table", pl: "tabela wymiarów" },
+            { en: "drill-across", pl: "drążenie w poprzek" },
+            { en: "drill-down", pl: "drążenie w głąb/drążenie w dół" },
+            { en: "duplicate value", pl: "duplikat wartości" },
+            { en: "(to) encompass", pl: "obejmować" },
+            { en: "end-user", pl: "użytkownik końcowy" },
+            { en: "(to) ensure", pl: "zapewniać" },
+            { en: "enterprise data warehouse", pl: "korporacyjna hurtownia danych" },
+            { en: "ETL process", pl: "proces ETL/proces ekstrakcji, transformacji i ładowania" },
+            { en: "executive reporting tool", pl: "narzędzie do raportowania dla kadry zarządzającej" },
+            { en: "executive", pl: "członek zarządu" },
+            { en: "expected value", pl: "wartość oczekiwana" },
+            { en: "eye-catching", pl: "przykuwający wzrok" },
+            { en: "fact table", pl: "tabela faktów" },
+            { en: "flat file", pl: "plik płaski" },
+            { en: "forecast", pl: "prognoza" },
+            { en: "foreign key reference", pl: "odwołanie do klucza obcego" },
+            { en: "fragmented", pl: "rozdrobniony/podzielony na części" },
+            { en: "(to) guesstimate", pl: "szacować „na oko”" },
+            { en: "inconsistent", pl: "niespójny" },
+            { en: "informed business decision", pl: "świadoma decyzja biznesowa" },
+            { en: "invalid data", pl: "nieprawidłowe dane" },
+            { en: "investment opportunity", pl: "możliwość inwestycyjna" },
+            { en: "join", pl: "złączenie" },
+            { en: "leader", pl: "lider" },
+            { en: "(to) leverage customer data", pl: "wykorzystać dane o klientach" },
+            { en: "loading on-the-fly", pl: "ładowanie w locie" },
+            { en: "meaningless key", pl: "klucz sztuczny" },
+            { en: "mobile BI tools", pl: "narzędzia do analizy business intelligence na urządzeniach mobilnych" },
+            { en: "multidimensional expression (MDX)", pl: "wyrażenie wielowymiarowe" },
+            { en: "multidimensional online analytical processing (MOLAP)", pl: "wielowymiarowe przetwarzanie analityczne online" },
+            { en: "niche player", pl: "gracz niszowy" },
+            { en: "non-volatile", pl: "nieulotny" },
+            { en: "(to) offload", pl: "odciążać" },
+            { en: "online analytical processing (OLAP)", pl: "przetwarzanie analityczne online" },
+            { en: "open source BI", pl: "narzędzia typu open source do analiz business intelligence" },
+            { en: "operational efficiency", pl: "efektywność operacyjna" },
+            { en: "(to) out-innovate", pl: "wykraczać poza ramy w zakresie wprowadzania innowacji" },
+            { en: "(to) out-perform", pl: "wykraczać poza ramy w zakresie wyników działalności gospodarczej" },
+            { en: "periodical", pl: "okresowy" },
+            { en: "positioning", pl: "pozycjonowanie" },
+            { en: "primary key", pl: "klucz główny" },
+            { en: "query workload", pl: "obciążenie wskutek wykonywania zapytania" },
+            { en: "record count", pl: "liczba rekordów" },
+            { en: "redundancy", pl: "redundancja/nadmiarowość" },
+            { en: "(to) refresh", pl: "odświeżać" },
+            { en: "relational database", pl: "relacyjna baza danych" },
+            { en: "relationship", pl: "związek/relacja" },
+            { en: "roll-up", pl: "konsolidowanie/zwijanie" },
+            { en: "(to) run a query", pl: "uruchomić zapytanie" },
+            { en: "scorecard", pl: "karta wyników" },
+            { en: "self-service BI (SSBI)", pl: "samodzielnie przeprowadzana analiza business intelligence" },
+            { en: "(to) slice-and-dice data", pl: "analizować dane w dowolnych przekrojach i rzutach" },
+            { en: "slice-and-dice pivot table analysis", pl: "analiza danych w dowolnych przekrojach i rzutach za pomocą tabeli przestawnej" },
+            { en: "slowly changing dimension (SCD)", pl: "wymiar wolnozmienny" },
+            { en: "snowflake schema", pl: "schemat płatka śniegu" },
+            { en: "sound business decision", pl: "rozsądna/trafna decyzja biznesowa" },
+            { en: "(to) spot", pl: "zauważać/dostrzegać" },
+            { en: "spreadsheet", pl: "arkusz kalkulacyjny" },
+            { en: "staging area", pl: "obszar tymczasowy" },
+            { en: "star schema", pl: "schemat gwiazdy" },
+            { en: "(to) state", pl: "określać/ogłaszać" },
+            { en: "statistical analysis", pl: "analiza statystyczna" },
+            { en: "subject-oriented", pl: "tematyczny" },
+            { en: "surrogate key", pl: "klucz sztuczny" },
+            { en: "target database", pl: "docelowa baza danych" },
+            { en: "temporary data store", pl: "tymczasowe miejsce przechowywania danych" },
+            { en: "text mining", pl: "eksploracja tekstu/danych tekstowych" },
+            { en: "time-consuming", pl: "czasochłonny" },
+            { en: "time-variant", pl: "zmienny w czasie" },
+            { en: "(to) transform", pl: "przekształcać" },
+            { en: "up-selling", pl: "sprzedaż produktów droższych" },
+            { en: "validation rule", pl: "reguła poprawności" },
+            { en: "violation of business rules", pl: "naruszenie reguł biznesowych" },
+            { en: "visionary", pl: "wizjoner" },
+            { en: "visually appealing", pl: "atrakcyjny wizualnie" },
+            { en: "what-if analysis", pl: "analiza typu „co-jeśli”" }
+        ];
+
+        const STORAGE_KEY = 'fiszki_it_bi_selected';
+
+        function loadSelected() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.length === vocabulary.length) return parsed;
+                } catch (e) {}
+            }
+            return vocabulary.map(() => true);
+        }
+        let selected = loadSelected();
+
+        function saveSelected() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(selected));
+        }
+
+        function renderList() {
+            const list = document.getElementById('wordList');
+            list.innerHTML = '';
+            vocabulary.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = 'word-item' + (selected[i] ? ' selected' : '');
+                div.innerHTML = `
+                    <input type="checkbox" ${selected[i] ? 'checked' : ''} data-index="${i}">
+                    <span class="word-text">
+                        <span class="word-en">${item.en}</span>
+                        <span class="word-sep">→</span>
+                        <span class="word-pl">${item.pl}</span>
+                    </span>
+                `;
+                div.querySelector('input').addEventListener('change', (e) => {
+                    selected[i] = e.target.checked;
+                    div.classList.toggle('selected', selected[i]);
+                    saveSelected();
+                    updateProgress();
+                });
+                list.appendChild(div);
+            });
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const count = selected.filter(Boolean).length;
+            document.getElementById('progressList').textContent = `Zaznaczono: ${count} / ${vocabulary.length}`;
+        }
+
+        function createTest(containerId, direction) {
+            const container = document.getElementById(containerId);
+            const activeVocab = vocabulary.filter((_, i) => selected[i]);
+            if (activeVocab.length === 0) {
+                container.innerHTML = '<p class="empty">Zaznacz przynajmniej jedno słówko w liście.</p>';
+                return;
+            }
+
+            let currentIndex = 0;
+            let score = 0;
+            let answered = false;
+
+            function shuffle(arr) {
+                const a = [...arr];
+                for (let i = a.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [a[i], a[j]] = [a[j], a[i]];
+                }
+                return a;
+            }
+
+            function renderQuestion() {
+                if (currentIndex >= activeVocab.length) {
+                    container.innerHTML = `
+                        <div class="test-card">
+                            <svg class="end-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="6"/>
+                                <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+                            </svg>
+                            <h2 class="test-question">Koniec testu!</h2>
+                            <p class="score">Wynik: ${score} / ${activeVocab.length}</p>
+                            <button class="btn" onclick="location.reload()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                                </svg>
+                                Od nowa
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const item = activeVocab[currentIndex];
+                const question = direction === 'en-pl' ? item.en : item.pl;
+                const correct = direction === 'en-pl' ? item.pl : item.en;
+
+                const others = vocabulary.filter(v => v !== item);
+                const wrongs = shuffle(others).slice(0, 3).map(v => direction === 'en-pl' ? v.pl : v.en);
+                const options = shuffle([correct, ...wrongs]);
+
+                container.innerHTML = `
+                    <div class="test-card">
+                        <div class="test-question">${question}</div>
+                        <div class="test-options">
+                            ${options.map(opt => `<button class="test-option" data-opt="${opt.replace(/"/g, '&quot;')}">${opt}</button>`).join('')}
+                        </div>
+                        <p class="progress">Pytanie ${currentIndex + 1} z ${activeVocab.length} | Wynik: ${score}</p>
+                    </div>
+                `;
+
+                answered = false;
+                container.querySelectorAll('.test-option').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (answered) return;
+                        answered = true;
+                        const chosen = btn.dataset.opt;
+                        if (chosen === correct) {
+                            btn.classList.add('correct');
+                            score++;
+                        } else {
+                            btn.classList.add('wrong');
+                            container.querySelectorAll('.test-option').forEach(b => {
+                                if (b.dataset.opt === correct) b.classList.add('correct');
+                            });
+                        }
+                        container.querySelectorAll('.test-option').forEach(b => b.disabled = true);
+                        setTimeout(() => {
+                            currentIndex++;
+                            renderQuestion();
+                        }, 1200);
+                    });
+                });
+            }
+
+            renderQuestion();
+        }
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.panel).classList.add('active');
+
+                if (tab.dataset.panel === 'test-en-pl') createTest('testEnPl', 'en-pl');
+                if (tab.dataset.panel === 'test-pl-en') createTest('testPlEn', 'pl-en');
+            });
+        });
+
+        renderList();
+    </script>
+</body>
+</html>
