@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#1a1a1a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Fiszki IT – Business Intelligence</title>
+    <title>Fiszki IT – Słownictwo z zeszytu</title>
     <style>
         :root {
             --bg: #1a1a1a;
@@ -26,8 +26,10 @@
 
             --success: #4a9d6a;
             --success-bg: rgba(74, 157, 106, 0.18);
+            --success-border: #4a9d6a;
             --danger: #c75450;
             --danger-bg: rgba(199, 84, 80, 0.18);
+            --danger-border: #c75450;
 
             --radius: 10px;
             --safe-top: env(safe-area-inset-top, 0px);
@@ -95,20 +97,20 @@
         .tab {
             flex: 1 1 auto;
             min-height: 44px;
-            padding: 0.5rem 0.8rem;
+            padding: 0.5rem 0.7rem;
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             cursor: pointer;
             color: var(--text-muted);
             transition: all 0.2s;
-            font-size: clamp(0.8rem, 3.2vw, 0.95rem);
+            font-size: clamp(0.7rem, 2.8vw, 0.9rem);
             font-family: inherit;
             white-space: nowrap;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.4rem;
+            gap: 0.35rem;
         }
         .tab svg { flex-shrink: 0; }
         .tab.active {
@@ -127,9 +129,6 @@
         .panel { display: none; }
         .panel.active { display: block; }
 
-        /* ============================================
-           LISTA SŁÓWEK – POPRAWIONA CZYTELNOŚĆ
-           ============================================ */
         .word-list { display: flex; flex-direction: column; gap: 0.5rem; }
         .word-item {
             display: flex;
@@ -213,7 +212,6 @@
             text-align: center;
         }
 
-        /* --- Test --- */
         .test-container {
             display: flex;
             flex-direction: column;
@@ -281,6 +279,75 @@
         .test-option.correct:disabled,
         .test-option.wrong:disabled { opacity: 1; }
 
+        /* ============================================
+           TRYB WPISYWANIA
+           ============================================ */
+        .input-test {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            width: 100%;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text-en);
+            font-size: clamp(1rem, 4vw, 1.15rem);
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.2s;
+            letter-spacing: 0.01em;
+            text-align: center;
+            outline: none;
+        }
+        .input-field::placeholder {
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+        .input-field:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+        .input-field.correct {
+            border-color: var(--success);
+            background: var(--success-bg);
+            color: #7dd99a;
+        }
+        .input-field.wrong {
+            border-color: var(--danger);
+            background: var(--danger-bg);
+            color: #e88a86;
+        }
+        .input-field:disabled {
+            opacity: 0.9;
+            cursor: default;
+        }
+
+        .input-feedback {
+            min-height: 1.4rem;
+            font-size: clamp(0.85rem, 3.4vw, 0.95rem);
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .input-feedback.correct { color: #7dd99a; }
+        .input-feedback.wrong { color: #e88a86; }
+        .input-feedback .label {
+            color: var(--text-dim);
+            font-weight: 400;
+            margin-right: 0.3rem;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         .btn {
             padding: 0.85rem 1.5rem;
             background: var(--accent);
@@ -300,6 +367,20 @@
         }
         .btn:active { transform: scale(0.97); }
         .btn:hover { background: var(--accent-hover); }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            background: var(--card-hover, #333);
+            border-color: var(--accent-border);
+            color: var(--accent);
+        }
 
         .score {
             font-size: clamp(1rem, 4vw, 1.15rem);
@@ -318,17 +399,30 @@
             margin-bottom: 0.5rem;
         }
 
+        /* Kbd hint */
+        .kbd-hint {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-align: center;
+            margin-top: 0.4rem;
+        }
+        .kbd-hint kbd {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.1rem 0.35rem;
+            font-family: inherit;
+            font-size: 0.75rem;
+        }
+
         @media (max-width: 380px) {
             body { padding-left: 0.5rem; padding-right: 0.5rem; }
-            .tab { padding: 0.5rem 0.5rem; }
+            .tab { padding: 0.45rem 0.4rem; }
             .word-item { padding: 0.75rem 0.7rem; gap: 0.6rem; }
             .test-card { padding: 1rem 0.8rem; }
             .test-option { padding: 0.8rem 0.85rem; }
         }
 
-        /* ============================================
-           DESKTOP (≥600px) – EN → PL w jednej linii
-           ============================================ */
         @media (min-width: 600px) {
             .word-text {
                 flex-direction: row;
@@ -371,12 +465,12 @@
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
             </svg>
-            Fiszki IT – Business Intelligence
+            Fiszki IT – Słownictwo z zeszytu
         </h1>
 
         <div class="tabs">
             <button class="tab active" data-panel="list">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="8" y1="6" x2="21" y2="6"/>
                     <line x1="8" y1="12" x2="21" y2="12"/>
                     <line x1="8" y1="18" x2="21" y2="18"/>
@@ -387,16 +481,30 @@
                 Lista
             </button>
             <button class="tab" data-panel="test-en-pl">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="9 18 15 12 9 6"/>
                 </svg>
                 EN → PL
             </button>
             <button class="tab" data-panel="test-pl-en">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="15 18 9 12 15 6"/>
                 </svg>
                 PL → EN
+            </button>
+            <button class="tab" data-panel="type-en-pl">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                EN → PL (wpisz)
+            </button>
+            <button class="tab" data-panel="type-pl-en">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                PL → EN (wpisz)
             </button>
         </div>
 
@@ -412,128 +520,55 @@
         <div id="test-pl-en" class="panel">
             <div class="test-container" id="testPlEn"></div>
         </div>
+
+        <div id="type-en-pl" class="panel">
+            <div class="test-container" id="typeEnPl"></div>
+        </div>
+
+        <div id="type-pl-en" class="panel">
+            <div class="test-container" id="typePlEn"></div>
+        </div>
     </div>
 
     <script>
+        // ===== SŁÓWKA ZE ZDJĘĆ ZESZYTU =====
         const vocabulary = [
-            { en: "(to) accelerate", pl: "przyspieszać" },
-            { en: "ad-hoc query", pl: "zapytanie ad hoc" },
-            { en: "aggregated data", pl: "dane zagregowane" },
-            { en: "analysis and presentation layer", pl: "warstwa analizy i prezentacji" },
-            { en: "analytical cube", pl: "kostka analityczna" },
-            { en: "(to) boost business performance", pl: "pobudzać wzrost wyników działalności gospodarczej" },
-            { en: "business intelligence (BI)", pl: "analityka biznesowa/business intelligence" },
-            { en: "challenger", pl: "pretendent" },
-            { en: "cleansing process", pl: "proces oczyszczania" },
-            { en: "(to) collect data", pl: "gromadzić dane" },
+            { en: "accelerate", pl: "przyspieszać" },
+            { en: "aggregated data", pl: "zagregowane dane" },
+            { en: "challenger", pl: "pretendent / konkurent" },
+            { en: "cleansing process", pl: "proces czyszczenia (danych)" },
             { en: "computation", pl: "obliczenie" },
-            { en: "(to) conduct analysis", pl: "przeprowadzić analizę" },
-            { en: "conformed dimension table", pl: "współdzielona tabela wymiarów" },
+            { en: "conformed dimension table", pl: "uzgodniona tabela wymiarów" },
             { en: "cross-selling", pl: "sprzedaż krzyżowa" },
-            { en: "dashboard", pl: "kokpit menedżerski" },
-            { en: "data analysis expressions (DAX)", pl: "wyrażenia analizy danych" },
-            { en: "data capture", pl: "zbieranie danych" },
-            { en: "data cleansing", pl: "oczyszczanie danych" },
-            { en: "data format", pl: "format danych" },
-            { en: "data integration layer", pl: "warstwa integracji danych" },
-            { en: "data loading", pl: "ładowanie danych" },
-            { en: "data mart", pl: "składnica danych/tematyczna hurtownia danych" },
-            { en: "data mining", pl: "eksploracja danych" },
-            { en: "data profiling", pl: "profilowanie danych" },
-            { en: "data scrubbing", pl: "oczyszczanie danych" },
-            { en: "data sources layer", pl: "warstwa źródeł danych" },
-            { en: "data storage layer", pl: "warstwa przechowywania danych" },
-            { en: "data storage system", pl: "system przechowywania danych" },
-            { en: "data store", pl: "magazyn danych" },
-            { en: "data transformation", pl: "przekształcanie danych/transformacja danych" },
-            { en: "data type", pl: "typ danych" },
-            { en: "data validation", pl: "sprawdzanie poprawności danych" },
-            { en: "data visualization tool", pl: "narzędzie do wizualizacji danych" },
-            { en: "data visualization", pl: "wizualizacja danych" },
-            { en: "data warehouse", pl: "hurtownia danych" },
-            { en: "database schema", pl: "schemat bazy danych" },
-            { en: "(to) denormalize", pl: "dokonać denormalizacji" },
-            { en: "(to) detect", pl: "wykrywać" },
+            { en: "dashboard", pl: "pulpit nawigacyjny / kokpit" },
+            { en: "DAX", pl: "Data Analysis Expressions" },
+            { en: "data scrubbing / cleansing", pl: "czyszczenie danych" },
+            { en: "data validation", pl: "walidacja danych" },
+            { en: "denormalize", pl: "denormalizować" },
+            { en: "detect", pl: "wykrywać" },
             { en: "dimension table", pl: "tabela wymiarów" },
-            { en: "drill-across", pl: "drążenie w poprzek" },
-            { en: "drill-down", pl: "drążenie w głąb/drążenie w dół" },
-            { en: "duplicate value", pl: "duplikat wartości" },
-            { en: "(to) encompass", pl: "obejmować" },
-            { en: "end-user", pl: "użytkownik końcowy" },
-            { en: "(to) ensure", pl: "zapewniać" },
-            { en: "enterprise data warehouse", pl: "korporacyjna hurtownia danych" },
-            { en: "ETL process", pl: "proces ETL/proces ekstrakcji, transformacji i ładowania" },
-            { en: "executive reporting tool", pl: "narzędzie do raportowania dla kadry zarządzającej" },
-            { en: "executive", pl: "członek zarządu" },
-            { en: "expected value", pl: "wartość oczekiwana" },
-            { en: "eye-catching", pl: "przykuwający wzrok" },
-            { en: "fact table", pl: "tabela faktów" },
-            { en: "flat file", pl: "plik płaski" },
-            { en: "forecast", pl: "prognoza" },
-            { en: "foreign key reference", pl: "odwołanie do klucza obcego" },
-            { en: "fragmented", pl: "rozdrobniony/podzielony na części" },
-            { en: "(to) guesstimate", pl: "szacować „na oko”" },
+            { en: "encompass", pl: "obejmować" },
+            { en: "ETL process", pl: "proces Extract, Transform, Load – wyodrębnianie, przekształcanie i ładowanie danych" },
+            { en: "executive", pl: "stanowisko kierownicze / dyrektor" },
+            { en: "forecast", pl: "prognoza / prognozować" },
+            { en: "fragmented", pl: "pofragmentowany" },
+            { en: "guesstimate", pl: "szacować „na oko” (połączenie guess + estimate)" },
             { en: "inconsistent", pl: "niespójny" },
-            { en: "informed business decision", pl: "świadoma decyzja biznesowa" },
-            { en: "invalid data", pl: "nieprawidłowe dane" },
-            { en: "investment opportunity", pl: "możliwość inwestycyjna" },
-            { en: "join", pl: "złączenie" },
-            { en: "leader", pl: "lider" },
-            { en: "(to) leverage customer data", pl: "wykorzystać dane o klientach" },
-            { en: "loading on-the-fly", pl: "ładowanie w locie" },
-            { en: "meaningless key", pl: "klucz sztuczny" },
-            { en: "mobile BI tools", pl: "narzędzia do analizy business intelligence na urządzeniach mobilnych" },
-            { en: "multidimensional expression (MDX)", pl: "wyrażenie wielowymiarowe" },
-            { en: "multidimensional online analytical processing (MOLAP)", pl: "wielowymiarowe przetwarzanie analityczne online" },
-            { en: "niche player", pl: "gracz niszowy" },
-            { en: "non-volatile", pl: "nieulotny" },
-            { en: "(to) offload", pl: "odciążać" },
-            { en: "online analytical processing (OLAP)", pl: "przetwarzanie analityczne online" },
-            { en: "open source BI", pl: "narzędzia typu open source do analiz business intelligence" },
-            { en: "operational efficiency", pl: "efektywność operacyjna" },
-            { en: "(to) out-innovate", pl: "wykraczać poza ramy w zakresie wprowadzania innowacji" },
-            { en: "(to) out-perform", pl: "wykraczać poza ramy w zakresie wyników działalności gospodarczej" },
-            { en: "periodical", pl: "okresowy" },
-            { en: "positioning", pl: "pozycjonowanie" },
-            { en: "primary key", pl: "klucz główny" },
-            { en: "query workload", pl: "obciążenie wskutek wykonywania zapytania" },
-            { en: "record count", pl: "liczba rekordów" },
-            { en: "redundancy", pl: "redundancja/nadmiarowość" },
-            { en: "(to) refresh", pl: "odświeżać" },
-            { en: "relational database", pl: "relacyjna baza danych" },
-            { en: "relationship", pl: "związek/relacja" },
-            { en: "roll-up", pl: "konsolidowanie/zwijanie" },
-            { en: "(to) run a query", pl: "uruchomić zapytanie" },
-            { en: "scorecard", pl: "karta wyników" },
-            { en: "self-service BI (SSBI)", pl: "samodzielnie przeprowadzana analiza business intelligence" },
-            { en: "(to) slice-and-dice data", pl: "analizować dane w dowolnych przekrojach i rzutach" },
-            { en: "slice-and-dice pivot table analysis", pl: "analiza danych w dowolnych przekrojach i rzutach za pomocą tabeli przestawnej" },
-            { en: "slowly changing dimension (SCD)", pl: "wymiar wolnozmienny" },
-            { en: "snowflake schema", pl: "schemat płatka śniegu" },
-            { en: "sound business decision", pl: "rozsądna/trafna decyzja biznesowa" },
-            { en: "(to) spot", pl: "zauważać/dostrzegać" },
-            { en: "spreadsheet", pl: "arkusz kalkulacyjny" },
-            { en: "staging area", pl: "obszar tymczasowy" },
-            { en: "star schema", pl: "schemat gwiazdy" },
-            { en: "(to) state", pl: "określać/ogłaszać" },
-            { en: "statistical analysis", pl: "analiza statystyczna" },
-            { en: "subject-oriented", pl: "tematyczny" },
-            { en: "surrogate key", pl: "klucz sztuczny" },
-            { en: "target database", pl: "docelowa baza danych" },
-            { en: "temporary data store", pl: "tymczasowe miejsce przechowywania danych" },
-            { en: "text mining", pl: "eksploracja tekstu/danych tekstowych" },
-            { en: "time-consuming", pl: "czasochłonny" },
-            { en: "time-variant", pl: "zmienny w czasie" },
-            { en: "(to) transform", pl: "przekształcać" },
-            { en: "up-selling", pl: "sprzedaż produktów droższych" },
-            { en: "validation rule", pl: "reguła poprawności" },
-            { en: "violation of business rules", pl: "naruszenie reguł biznesowych" },
-            { en: "visionary", pl: "wizjoner" },
-            { en: "visually appealing", pl: "atrakcyjny wizualnie" },
-            { en: "what-if analysis", pl: "analiza typu „co-jeśli”" }
+            { en: "leverage customer data", pl: "wykorzystywać dane klientów" },
+            { en: "MDX", pl: "Multidimensional Expressions" },
+            { en: "MOLAP", pl: "Multidimensional Online Analytical Processing" },
+            { en: "offload", pl: "odciążyć / przenieść dane" },
+            { en: "out-innovate", pl: "prześcignąć w innowacjach (różnica w stosunku do out-perform)" },
+            { en: "out-perform", pl: "osiągać lepsze wyniki" },
+            { en: "SSBI", pl: "Self-Service Business Intelligence" },
+            { en: "SCD", pl: "Slowly Changing Dimension" },
+            { en: "sound business decisions", pl: "trafne/rozsądne decyzje biznesowe" },
+            { en: "state", pl: "stan / określać" },
+            { en: "meaningless key / surrogate key", pl: "klucz sztuczny / klucz zastępczy" },
+            { en: "time variant", pl: "zależny od czasu / zmienny w czasie" }
         ];
 
-        const STORAGE_KEY = 'fiszki_it_bi_selected';
+        const STORAGE_KEY = 'fiszki_it_zeszyt_selected';
 
         function loadSelected() {
             const saved = localStorage.getItem(STORAGE_KEY);
@@ -549,6 +584,52 @@
 
         function saveSelected() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(selected));
+        }
+
+        // --- Normalizacja odpowiedzi ---
+        // Usuwa polskie znaki diakrytyczne, interpunkcję, nadmiarowe spacje, lowercase
+        function normalize(str) {
+            return str
+                .toLowerCase()
+                .trim()
+                .replace(/ą/g, 'a')
+                .replace(/ć/g, 'c')
+                .replace(/ę/g, 'e')
+                .replace(/ł/g, 'l')
+                .replace(/ń/g, 'n')
+                .replace(/ó/g, 'o')
+                .replace(/ś/g, 's')
+                .replace(/[żź]/g, 'z')
+                .replace(/[^a-z0-9\s\/\-]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        // Sprawdza czy odpowiedź pasuje do tłumaczenia
+        // Obsługuje warianty rozdzielone "/" oraz tekst w nawiasach
+        function isAnswerCorrect(userAnswer, correctAnswer) {
+            const user = normalize(userAnswer);
+            if (!user) return false;
+
+            // Podziel poprawną odpowiedź na warianty (po "/")
+            const variants = correctAnswer
+                .split('/')
+                .map(v => v.trim())
+                .filter(Boolean);
+
+            for (const variant of variants) {
+                // Usuń nawiasy i ich zawartość dla porównania
+                const cleanVariant = variant.replace(/\(.*?\)/g, '').trim();
+                const normalizedVariant = normalize(cleanVariant);
+                if (!normalizedVariant) continue;
+
+                // Dokładne dopasowanie
+                if (user === normalizedVariant) return true;
+
+                // Dopasowanie bez myślników (np. "out perform" = "out-perform")
+                if (user.replace(/\s/g, '') === normalizedVariant.replace(/\s/g, '')) return true;
+            }
+            return false;
         }
 
         function renderList() {
@@ -581,6 +662,18 @@
             document.getElementById('progressList').textContent = `Zaznaczono: ${count} / ${vocabulary.length}`;
         }
 
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        // ============================================
+        // TEST WYBORU (multiple choice)
+        // ============================================
         function createTest(containerId, direction) {
             const container = document.getElementById(containerId);
             const activeVocab = vocabulary.filter((_, i) => selected[i]);
@@ -592,15 +685,6 @@
             let currentIndex = 0;
             let score = 0;
             let answered = false;
-
-            function shuffle(arr) {
-                const a = [...arr];
-                for (let i = a.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [a[i], a[j]] = [a[j], a[i]];
-                }
-                return a;
-            }
 
             function renderQuestion() {
                 if (currentIndex >= activeVocab.length) {
@@ -669,6 +753,145 @@
             renderQuestion();
         }
 
+        // ============================================
+        // TEST WPISYWANIA (typing)
+        // ============================================
+        function createTypingTest(containerId, direction) {
+            const container = document.getElementById(containerId);
+            const activeVocab = vocabulary.filter((_, i) => selected[i]);
+            if (activeVocab.length === 0) {
+                container.innerHTML = '<p class="empty">Zaznacz przynajmniej jedno słówko w liście.</p>';
+                return;
+            }
+
+            let currentIndex = 0;
+            let score = 0;
+            let answered = false;
+
+            function renderQuestion() {
+                if (currentIndex >= activeVocab.length) {
+                    container.innerHTML = `
+                        <div class="test-card">
+                            <svg class="end-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="6"/>
+                                <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+                            </svg>
+                            <h2 class="test-question">Koniec testu!</h2>
+                            <p class="score">Wynik: ${score} / ${activeVocab.length}</p>
+                            <button class="btn" onclick="location.reload()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                                </svg>
+                                Od nowa
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const item = activeVocab[currentIndex];
+                const question = direction === 'en-pl' ? item.en : item.pl;
+                const correct = direction === 'en-pl' ? item.pl : item.en;
+                const placeholder = direction === 'en-pl' ? 'Wpisz tłumaczenie po polsku...' : 'Wpisz słowo po angielsku...';
+
+                container.innerHTML = `
+                    <div class="test-card">
+                        <div class="test-question">${question}</div>
+                        <div class="input-test">
+                            <input
+                                type="text"
+                                class="input-field"
+                                id="answerInput"
+                                placeholder="${placeholder}"
+                                autocomplete="off"
+                                autocorrect="off"
+                                autocapitalize="off"
+                                spellcheck="false"
+                            >
+                            <div class="input-feedback" id="feedback"></div>
+                            <div class="input-actions">
+                                <button class="btn" id="submitBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"/>
+                                    </svg>
+                                    Sprawdź
+                                </button>
+                                <button class="btn btn-secondary" id="skipBtn">Pomiń</button>
+                            </div>
+                            <p class="kbd-hint">Naciśnij <kbd>Enter</kbd>, aby zatwierdzić</p>
+                        </div>
+                        <p class="progress">Pytanie ${currentIndex + 1} z ${activeVocab.length} | Wynik: ${score}</p>
+                    </div>
+                `;
+
+                const input = document.getElementById('answerInput');
+                const feedback = document.getElementById('feedback');
+                const submitBtn = document.getElementById('submitBtn');
+                const skipBtn = document.getElementById('skipBtn');
+
+                answered = false;
+                input.focus();
+
+                function submit() {
+                    if (answered) return;
+                    const userAnswer = input.value;
+                    if (!userAnswer.trim()) return; // puste pole - nie zatwierdzaj
+
+                    answered = true;
+                    input.disabled = true;
+                    submitBtn.disabled = true;
+                    skipBtn.disabled = true;
+
+                    const isCorrect = isAnswerCorrect(userAnswer, correct);
+
+                    if (isCorrect) {
+                        input.classList.add('correct');
+                        feedback.classList.add('correct');
+                        feedback.innerHTML = '<span class="label">✓</span> Dobrze!';
+                        score++;
+                    } else {
+                        input.classList.add('wrong');
+                        feedback.classList.add('wrong');
+                        feedback.innerHTML = `<span class="label">✗ Poprawna odpowiedź:</span> ${correct}`;
+                    }
+
+                    setTimeout(() => {
+                        currentIndex++;
+                        renderQuestion();
+                    }, isCorrect ? 900 : 1800);
+                }
+
+                function skip() {
+                    if (answered) return;
+                    answered = true;
+                    input.disabled = true;
+                    submitBtn.disabled = true;
+                    skipBtn.disabled = true;
+
+                    input.classList.add('wrong');
+                    feedback.classList.add('wrong');
+                    feedback.innerHTML = `<span class="label">Pominięto. Poprawna odpowiedź:</span> ${correct}`;
+
+                    setTimeout(() => {
+                        currentIndex++;
+                        renderQuestion();
+                    }, 1800);
+                }
+
+                submitBtn.addEventListener('click', submit);
+                skipBtn.addEventListener('click', skip);
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        submit();
+                    }
+                });
+            }
+
+            renderQuestion();
+        }
+
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -676,8 +899,11 @@
                 tab.classList.add('active');
                 document.getElementById(tab.dataset.panel).classList.add('active');
 
-                if (tab.dataset.panel === 'test-en-pl') createTest('testEnPl', 'en-pl');
-                if (tab.dataset.panel === 'test-pl-en') createTest('testPlEn', 'pl-en');
+                const panel = tab.dataset.panel;
+                if (panel === 'test-en-pl') createTest('testEnPl', 'en-pl');
+                if (panel === 'test-pl-en') createTest('testPlEn', 'pl-en');
+                if (panel === 'type-en-pl') createTypingTest('typeEnPl', 'en-pl');
+                if (panel === 'type-pl-en') createTypingTest('typePlEn', 'pl-en');
             });
         });
 
