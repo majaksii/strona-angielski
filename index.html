@@ -18,6 +18,7 @@
 
             --text-en: #f5f5f5;
             --text-pl: #c8c8c8;
+            --text-full: #8fb8d4;
 
             --accent: #5eb8e8;
             --accent-hover: #3d9fd4;
@@ -26,10 +27,8 @@
 
             --success: #4a9d6a;
             --success-bg: rgba(74, 157, 106, 0.18);
-            --success-border: #4a9d6a;
             --danger: #c75450;
             --danger-bg: rgba(199, 84, 80, 0.18);
-            --danger-border: #c75450;
 
             --radius: 10px;
             --safe-top: env(safe-area-inset-top, 0px);
@@ -205,6 +204,35 @@
             line-height: 1.5;
         }
 
+        /* Rozwinięcie skrótu */
+        .word-full {
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
+            margin-top: 0.15rem;
+            padding-left: 0.6rem;
+            border-left: 2px solid var(--accent-border);
+            font-size: clamp(0.75rem, 3vw, 0.85rem);
+            color: var(--text-full);
+            line-height: 1.4;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+        .word-full .full-en {
+            font-style: italic;
+        }
+        .word-full .full-pl {
+            opacity: 0.85;
+        }
+        .word-full .full-label {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-right: 0.25rem;
+            font-style: normal;
+        }
+
         .progress {
             font-size: clamp(0.75rem, 3vw, 0.9rem);
             color: var(--text-dim);
@@ -236,6 +264,30 @@
             line-height: 1.4;
             letter-spacing: 0.01em;
         }
+
+        /* Rozwinięcie w pytaniu testu */
+        .test-hint {
+            font-size: clamp(0.8rem, 3.2vw, 0.9rem);
+            color: var(--text-full);
+            margin-bottom: 1rem;
+            font-style: italic;
+            line-height: 1.4;
+            padding: 0.5rem 0.8rem;
+            background: var(--accent-soft);
+            border-radius: 6px;
+            border-left: 2px solid var(--accent);
+            text-align: left;
+        }
+        .test-hint .hint-label {
+            font-style: normal;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+
         .test-options {
             display: flex;
             flex-direction: column;
@@ -278,6 +330,29 @@
         .test-option:disabled { cursor: default; }
         .test-option.correct:disabled,
         .test-option.wrong:disabled { opacity: 1; }
+
+        /* Feedback po odpowiedzi w teście wyboru */
+        .test-feedback {
+            margin-top: 0.9rem;
+            padding: 0.6rem 0.8rem;
+            background: var(--accent-soft);
+            border-left: 2px solid var(--accent);
+            border-radius: 6px;
+            font-size: clamp(0.8rem, 3.2vw, 0.9rem);
+            color: var(--text-full);
+            text-align: left;
+            line-height: 1.4;
+        }
+        .test-feedback .fb-label {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+        .test-feedback .fb-en { font-style: italic; }
+        .test-feedback .fb-pl { opacity: 0.9; }
 
         /* ============================================
            TRYB WPISYWANIA
@@ -332,6 +407,7 @@
             font-weight: 500;
             text-align: center;
             transition: all 0.2s;
+            line-height: 1.5;
         }
         .input-feedback.correct { color: #7dd99a; }
         .input-feedback.wrong { color: #e88a86; }
@@ -339,6 +415,13 @@
             color: var(--text-dim);
             font-weight: 400;
             margin-right: 0.3rem;
+        }
+        .input-feedback .full-info {
+            display: block;
+            margin-top: 0.4rem;
+            color: var(--text-full);
+            font-size: 0.85em;
+            font-style: italic;
         }
 
         .input-actions {
@@ -377,7 +460,7 @@
             border: 1px solid var(--border);
         }
         .btn-secondary:hover {
-            background: var(--card-hover, #333);
+            background: #333;
             border-color: var(--accent-border);
             color: var(--accent);
         }
@@ -399,7 +482,6 @@
             margin-bottom: 0.5rem;
         }
 
-        /* Kbd hint */
         .kbd-hint {
             font-size: 0.75rem;
             color: var(--text-dim);
@@ -441,6 +523,10 @@
             .word-pl {
                 flex: 1;
                 min-width: 0;
+            }
+            .word-full {
+                flex-basis: 100%;
+                margin-left: 200px;
             }
             .test-card { padding: 1.8rem; }
         }
@@ -532,6 +618,7 @@
 
     <script>
         // ===== SŁÓWKA ZE ZDJĘĆ ZESZYTU =====
+        // full: { en: "rozwiniecie po angielsku", pl: "rozwiniecie po polsku" }
         const vocabulary = [
             { en: "accelerate", pl: "przyspieszać" },
             { en: "aggregated data", pl: "zagregowane dane" },
@@ -541,27 +628,69 @@
             { en: "conformed dimension table", pl: "uzgodniona tabela wymiarów" },
             { en: "cross-selling", pl: "sprzedaż krzyżowa" },
             { en: "dashboard", pl: "pulpit nawigacyjny / kokpit" },
-            { en: "DAX", pl: "Data Analysis Expressions" },
+            {
+                en: "DAX",
+                pl: "Data Analysis Expressions",
+                full: {
+                    en: "Data Analysis Expressions",
+                    pl: "Wyrażenia analizy danych"
+                }
+            },
             { en: "data scrubbing / cleansing", pl: "czyszczenie danych" },
             { en: "data validation", pl: "walidacja danych" },
             { en: "denormalize", pl: "denormalizować" },
             { en: "detect", pl: "wykrywać" },
             { en: "dimension table", pl: "tabela wymiarów" },
             { en: "encompass", pl: "obejmować" },
-            { en: "ETL process", pl: "proces Extract, Transform, Load – wyodrębnianie, przekształcanie i ładowanie danych" },
+            {
+                en: "ETL process",
+                pl: "proces Extract, Transform, Load – wyodrębnianie, przekształcanie i ładowanie danych",
+                full: {
+                    en: "Extract, Transform, Load",
+                    pl: "Wyodrębnianie, przekształcanie i ładowanie"
+                }
+            },
             { en: "executive", pl: "stanowisko kierownicze / dyrektor" },
             { en: "forecast", pl: "prognoza / prognozować" },
             { en: "fragmented", pl: "pofragmentowany" },
             { en: "guesstimate", pl: "szacować „na oko” (połączenie guess + estimate)" },
             { en: "inconsistent", pl: "niespójny" },
             { en: "leverage customer data", pl: "wykorzystywać dane klientów" },
-            { en: "MDX", pl: "Multidimensional Expressions" },
-            { en: "MOLAP", pl: "Multidimensional Online Analytical Processing" },
+            {
+                en: "MDX",
+                pl: "Multidimensional Expressions",
+                full: {
+                    en: "Multidimensional Expressions",
+                    pl: "Wyrażenia wielowymiarowe"
+                }
+            },
+            {
+                en: "MOLAP",
+                pl: "Multidimensional Online Analytical Processing",
+                full: {
+                    en: "Multidimensional Online Analytical Processing",
+                    pl: "Wielowymiarowe przetwarzanie analityczne online"
+                }
+            },
             { en: "offload", pl: "odciążyć / przenieść dane" },
             { en: "out-innovate", pl: "prześcignąć w innowacjach (różnica w stosunku do out-perform)" },
             { en: "out-perform", pl: "osiągać lepsze wyniki" },
-            { en: "SSBI", pl: "Self-Service Business Intelligence" },
-            { en: "SCD", pl: "Slowly Changing Dimension" },
+            {
+                en: "SSBI",
+                pl: "Self-Service Business Intelligence",
+                full: {
+                    en: "Self-Service Business Intelligence",
+                    pl: "Samodzielnie przeprowadzana analiza business intelligence"
+                }
+            },
+            {
+                en: "SCD",
+                pl: "Slowly Changing Dimension",
+                full: {
+                    en: "Slowly Changing Dimension",
+                    pl: "Wymiar wolnozmienny"
+                }
+            },
             { en: "sound business decisions", pl: "trafne/rozsądne decyzje biznesowe" },
             { en: "state", pl: "stan / określać" },
             { en: "meaningless key / surrogate key", pl: "klucz sztuczny / klucz zastępczy" },
@@ -587,7 +716,6 @@
         }
 
         // --- Normalizacja odpowiedzi ---
-        // Usuwa polskie znaki diakrytyczne, interpunkcję, nadmiarowe spacje, lowercase
         function normalize(str) {
             return str
                 .toLowerCase()
@@ -605,45 +733,51 @@
                 .trim();
         }
 
-        // Sprawdza czy odpowiedź pasuje do tłumaczenia
-        // Obsługuje warianty rozdzielone "/" oraz tekst w nawiasach
         function isAnswerCorrect(userAnswer, correctAnswer) {
             const user = normalize(userAnswer);
             if (!user) return false;
 
-            // Podziel poprawną odpowiedź na warianty (po "/")
             const variants = correctAnswer
                 .split('/')
                 .map(v => v.trim())
                 .filter(Boolean);
 
             for (const variant of variants) {
-                // Usuń nawiasy i ich zawartość dla porównania
                 const cleanVariant = variant.replace(/\(.*?\)/g, '').trim();
                 const normalizedVariant = normalize(cleanVariant);
                 if (!normalizedVariant) continue;
 
-                // Dokładne dopasowanie
                 if (user === normalizedVariant) return true;
-
-                // Dopasowanie bez myślników (np. "out perform" = "out-perform")
                 if (user.replace(/\s/g, '') === normalizedVariant.replace(/\s/g, '')) return true;
             }
             return false;
         }
 
+        // --- Renderowanie listy ---
         function renderList() {
             const list = document.getElementById('wordList');
             list.innerHTML = '';
             vocabulary.forEach((item, i) => {
                 const div = document.createElement('div');
                 div.className = 'word-item' + (selected[i] ? ' selected' : '');
+
+                let fullHtml = '';
+                if (item.full) {
+                    fullHtml = `
+                        <span class="word-full">
+                            <span class="full-en"><span class="full-label">EN</span>${item.full.en}</span>
+                            <span class="full-pl"><span class="full-label">PL</span>${item.full.pl}</span>
+                        </span>
+                    `;
+                }
+
                 div.innerHTML = `
                     <input type="checkbox" ${selected[i] ? 'checked' : ''} data-index="${i}">
                     <span class="word-text">
                         <span class="word-en">${item.en}</span>
                         <span class="word-sep">→</span>
                         <span class="word-pl">${item.pl}</span>
+                        ${fullHtml}
                     </span>
                 `;
                 div.querySelector('input').addEventListener('change', (e) => {
@@ -712,6 +846,18 @@
                 const question = direction === 'en-pl' ? item.en : item.pl;
                 const correct = direction === 'en-pl' ? item.pl : item.en;
 
+                // Hint z rozwinięciem skrótu (jeśli istnieje)
+                let hintHtml = '';
+                if (item.full) {
+                    hintHtml = `
+                        <div class="test-hint">
+                            <span class="hint-label">Rozwinięcie skrótu</span>
+                            <span class="fb-en">${item.full.en}</span><br>
+                            <span class="fb-pl">${item.full.pl}</span>
+                        </div>
+                    `;
+                }
+
                 const others = vocabulary.filter(v => v !== item);
                 const wrongs = shuffle(others).slice(0, 3).map(v => direction === 'en-pl' ? v.pl : v.en);
                 const options = shuffle([correct, ...wrongs]);
@@ -719,9 +865,11 @@
                 container.innerHTML = `
                     <div class="test-card">
                         <div class="test-question">${question}</div>
+                        ${hintHtml}
                         <div class="test-options">
                             ${options.map(opt => `<button class="test-option" data-opt="${opt.replace(/"/g, '&quot;')}">${opt}</button>`).join('')}
                         </div>
+                        <div id="testFeedback"></div>
                         <p class="progress">Pytanie ${currentIndex + 1} z ${activeVocab.length} | Wynik: ${score}</p>
                     </div>
                 `;
@@ -742,10 +890,23 @@
                             });
                         }
                         container.querySelectorAll('.test-option').forEach(b => b.disabled = true);
+
+                        // Pokaż rozwinięcie skrótu po odpowiedzi
+                        if (item.full) {
+                            const fb = document.getElementById('testFeedback');
+                            fb.innerHTML = `
+                                <div class="test-feedback">
+                                    <span class="fb-label">Rozwinięcie skrótu</span>
+                                    <span class="fb-en">${item.full.en}</span><br>
+                                    <span class="fb-pl">${item.full.pl}</span>
+                                </div>
+                            `;
+                        }
+
                         setTimeout(() => {
                             currentIndex++;
                             renderQuestion();
-                        }, 1200);
+                        }, item.full ? 2200 : 1200);
                     });
                 });
             }
@@ -795,9 +956,22 @@
                 const correct = direction === 'en-pl' ? item.pl : item.en;
                 const placeholder = direction === 'en-pl' ? 'Wpisz tłumaczenie po polsku...' : 'Wpisz słowo po angielsku...';
 
+                // Hint z rozwinięciem skrótu (jeśli istnieje)
+                let hintHtml = '';
+                if (item.full) {
+                    hintHtml = `
+                        <div class="test-hint">
+                            <span class="hint-label">Rozwinięcie skrótu</span>
+                            <span class="fb-en">${item.full.en}</span><br>
+                            <span class="fb-pl">${item.full.pl}</span>
+                        </div>
+                    `;
+                }
+
                 container.innerHTML = `
                     <div class="test-card">
                         <div class="test-question">${question}</div>
+                        ${hintHtml}
                         <div class="input-test">
                             <input
                                 type="text"
@@ -833,10 +1007,15 @@
                 answered = false;
                 input.focus();
 
+                function buildFullInfo() {
+                    if (!item.full) return '';
+                    return `<span class="full-info">${item.full.en} — ${item.full.pl}</span>`;
+                }
+
                 function submit() {
                     if (answered) return;
                     const userAnswer = input.value;
-                    if (!userAnswer.trim()) return; // puste pole - nie zatwierdzaj
+                    if (!userAnswer.trim()) return;
 
                     answered = true;
                     input.disabled = true;
@@ -844,22 +1023,23 @@
                     skipBtn.disabled = true;
 
                     const isCorrect = isAnswerCorrect(userAnswer, correct);
+                    const fullInfo = buildFullInfo();
 
                     if (isCorrect) {
                         input.classList.add('correct');
                         feedback.classList.add('correct');
-                        feedback.innerHTML = '<span class="label">✓</span> Dobrze!';
+                        feedback.innerHTML = '<span class="label">✓</span> Dobrze!' + fullInfo;
                         score++;
                     } else {
                         input.classList.add('wrong');
                         feedback.classList.add('wrong');
-                        feedback.innerHTML = `<span class="label">✗ Poprawna odpowiedź:</span> ${correct}`;
+                        feedback.innerHTML = `<span class="label">✗ Poprawna odpowiedź:</span> ${correct}` + fullInfo;
                     }
 
                     setTimeout(() => {
                         currentIndex++;
                         renderQuestion();
-                    }, isCorrect ? 900 : 1800);
+                    }, isCorrect ? (item.full ? 1800 : 900) : 2200);
                 }
 
                 function skip() {
@@ -871,12 +1051,12 @@
 
                     input.classList.add('wrong');
                     feedback.classList.add('wrong');
-                    feedback.innerHTML = `<span class="label">Pominięto. Poprawna odpowiedź:</span> ${correct}`;
+                    feedback.innerHTML = `<span class="label">Pominięto. Poprawna odpowiedź:</span> ${correct}` + buildFullInfo();
 
                     setTimeout(() => {
                         currentIndex++;
                         renderQuestion();
-                    }, 1800);
+                    }, 2200);
                 }
 
                 submitBtn.addEventListener('click', submit);
